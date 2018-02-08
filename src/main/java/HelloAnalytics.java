@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.api.services.analyticsreporting.v4.AnalyticsReportingScopes;
@@ -84,12 +85,12 @@ public class HelloAnalytics {
         // Set up authorization code flow for all authorization scopes.
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow
                 .Builder(httpTransport, JSON_FACTORY, clientSecrets,
-                AnalyticsReportingScopes.all()).setDataStoreFactory(dataStoreFactory)
+                Collections.singleton(AnalyticsReportingScopes.ANALYTICS_READONLY)).setDataStoreFactory(dataStoreFactory)
                 .build();
 
         // Authorize.
         Credential credential = new AuthorizationCodeInstalledApp(flow,
-                new LocalServerReceiver()).authorize("user");
+                new LocalServerReceiver.Builder().setPort(8080).build()).authorize("user");
         // Construct the Analytics Reporting service object.
         return new AnalyticsReporting.Builder(httpTransport, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME).build();
